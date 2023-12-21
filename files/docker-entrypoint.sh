@@ -1,6 +1,10 @@
 #!/bin/sh
 
 # Add ssh user & password
+if [ -z "/$SSHUSER" ] || [ -z "/$SSHPASS" ]; then
+  exit 1
+fi
+
 adduser -h /home/$SSHUSER -s /bin/sh -D $SSHUSER
 echo -n adb:$SSHPASS | chpasswd
 
