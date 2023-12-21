@@ -48,7 +48,7 @@ EXPOSE 22
 RUN apk add --update --no-cache git nodejs npm
 
 # Install ws-scrcpy
-RUN git clone --depth 1 --branch m2mrem https://github.com/widhaprasa/ws-scrcpy.git
+RUN git clone --depth 1 --branch wip_m2mrem https://github.com/widhaprasa/ws-scrcpy.git
 RUN apk add --no-cache --virtual .gyp python3 make g++ && \
   cd ws-scrcpy && npm install && \
   apk del .gyp
