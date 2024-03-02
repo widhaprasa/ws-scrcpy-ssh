@@ -1,10 +1,11 @@
-FROM alpine:3.18.5
+FROM alpine:3.16.9
 
 # Set up insecure default key
 RUN mkdir -m 0750 /root/.android
 ADD files/insecure_shared_adbkey /root/.android/adbkey
 ADD files/insecure_shared_adbkey.pub /root/.android/adbkey.pub
 ADD files/update-platform-tools.sh /usr/local/bin/update-platform-tools.sh
+RUN chmod +x /usr/local/bin/update-platform-tools.sh
 
 RUN set -xeo pipefail && \
     apk update && \
@@ -48,7 +49,7 @@ EXPOSE 22
 RUN apk add --update --no-cache git nodejs npm
 
 # Install ws-scrcpy
-RUN git clone --depth 1 --branch wip_m2mrem https://github.com/widhaprasa/ws-scrcpy.git
+RUN git clone --depth 1 --branch wip_m2mrem_hbs https://github.com/widhaprasa/ws-scrcpy.git
 RUN apk add --no-cache --virtual .gyp python3 make g++ && \
   cd ws-scrcpy && npm install && \
   apk del .gyp
