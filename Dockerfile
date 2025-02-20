@@ -1,12 +1,14 @@
 FROM alpine:3.16.9
 
-# Set up insecure default key
+# Set up adb android key directory
 RUN mkdir -m 0750 /root/.android
-ADD files/insecure_shared_adbkey /root/.android/adbkey
-ADD files/insecure_shared_adbkey.pub /root/.android/adbkey.pub
+VOLUME /root/.android
+
+# Add update platform tools script
 ADD files/update-platform-tools.sh /usr/local/bin/update-platform-tools.sh
 RUN chmod +x /usr/local/bin/update-platform-tools.sh
 
+# Install ADB
 RUN set -xeo pipefail && \
     apk update && \
     apk add wget ca-certificates tini && \
@@ -25,10 +27,10 @@ RUN set -xeo pipefail && \
     ln -sf /usr/glibc-compat/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2 && \
     /usr/local/bin/update-platform-tools.sh
 
-# Expose default ADB port
+# Expose default ADB server port
 EXPOSE 5037
 
-# Set up PATH
+# Set up PATH for ADB Shell
 ENV PATH $PATH:/opt/platform-tools
 
 # Change workdir
@@ -61,6 +63,12 @@ EXPOSE 8000
 # Add docker-entrypoint to image
 ADD files/docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
+
+# Install supervisor to run multiple processes
+RUN apk add --update supervisor && rm  -rf /tmp/* /var/cache/apk/*
+
+# Add the supervisor configuration
+ADD files/supervisord.conf /etc/
 
 # Entrypoint adb server
 ENTRYPOINT "./docker-entrypoint.sh"
